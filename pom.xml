@@ -5,12 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <!--<distributionManagement>-->
-        <!--<repository>-->
-            <!--<id>lorne-repository</id>-->
-            <!--<url>file:/lorne/repository/</url>-->
-        <!--</repository>-->
-    <!--</distributionManagement>-->
+
+    <distributionManagement>
+        <repository>
+            <id>lorne-repository</id>
+            <url>file:/Users/lorne/developer/idea/lorne/repository/</url>
+        </repository>
+    </distributionManagement>
 
 
     <repositories>
@@ -19,12 +20,6 @@
             <url>https://1991wangliang.github.io/repository</url>
         </repository>
     </repositories>
-
-    <parent>
-        <groupId>com.lorne.pom</groupId>
-        <artifactId>lorne_pom</artifactId>
-        <version>1.0.0</version>
-    </parent>
 
 
     <groupId>com.lorne.core</groupId>
@@ -58,6 +53,12 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.lorne.pom</groupId>
+            <artifactId>lorne_pom</artifactId>
+            <version>1.0.0.RELEASE</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
