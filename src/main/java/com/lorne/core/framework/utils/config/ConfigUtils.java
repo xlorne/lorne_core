@@ -1,22 +1,22 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.config;
 
 /**
  * Created by yuliang on 2017/4/7.
  */
-public class ConfigurationUtils {
+public class ConfigUtils {
 
     public static String getString(String filePath, String key) {
-        ConfigurationHelper helper = new ConfigurationHelper(filePath);
+        ConfigHelper helper = new ConfigHelper(filePath);
         return helper.getStringValue(key);
     }
 
     public static int getInt(String filePath, String key) {
-        ConfigurationHelper helper = new ConfigurationHelper(filePath);
+        ConfigHelper helper = new ConfigHelper(filePath);
         return helper.getIntValue(key);
     }
 
     public static void setProperty(String filePath, String key, Object val) {
-        ConfigurationHelper helper = new ConfigurationHelper(filePath);
+        ConfigHelper helper = new ConfigHelper(filePath);
         helper.setProperty(key, val);
     }
 

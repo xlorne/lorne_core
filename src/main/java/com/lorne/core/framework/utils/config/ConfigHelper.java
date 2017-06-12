@@ -1,4 +1,4 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.config;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -6,7 +6,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 /**
  * Created by yuliang on 2015/8/3.
  */
-public class ConfigurationHelper {
+public class ConfigHelper {
 
 
     private PropertiesConfiguration propertiesConfiguration = null;
@@ -32,7 +32,7 @@ public class ConfigurationHelper {
         return propertiesConfiguration.getFloat(key);
     }
 
-    public ConfigurationHelper(String propertyPath) {
+    public ConfigHelper(String propertyPath) {
         try {
             String path = Thread.currentThread().getContextClassLoader().getResource(propertyPath).getPath();
             propertiesConfiguration = new PropertiesConfiguration(path);

@@ -1,5 +1,7 @@
 package com.lorne.core.framework.utils;
 
+import com.lorne.core.framework.utils.encode.MD5Util;
+import com.lorne.core.framework.utils.redis.RedisUtil;
 import net.sf.json.JSONObject;
 import redis.clients.jedis.Jedis;
 

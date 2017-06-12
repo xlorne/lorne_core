@@ -1,4 +1,4 @@
-package com.lorne.core.framework.model;
+package com.lorne.core.framework.utils.json;
 
 /**
  * Created by yuliang on 2015/12/1.

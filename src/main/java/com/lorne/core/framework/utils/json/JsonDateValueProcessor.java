@@ -1,4 +1,4 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.json;
 
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;

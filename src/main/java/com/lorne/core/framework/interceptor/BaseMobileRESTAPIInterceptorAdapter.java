@@ -2,7 +2,7 @@ package com.lorne.core.framework.interceptor;
 
 
 import com.lorne.core.framework.Code;
-import com.lorne.core.framework.utils.MD5Util;
+import com.lorne.core.framework.utils.encode.MD5Util;
 import com.lorne.core.framework.utils.TokenUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.bind.ServletRequestUtils;

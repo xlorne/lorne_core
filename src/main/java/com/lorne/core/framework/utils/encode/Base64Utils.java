@@ -1,4 +1,4 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.encode;
 
 import org.apache.axis.encoding.Base64;
 

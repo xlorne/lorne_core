@@ -1,7 +1,6 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.json;
 
 
-import com.lorne.core.framework.model.ValueFilter;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;

@@ -1,4 +1,4 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.math;
 
 import java.math.BigDecimal;
 

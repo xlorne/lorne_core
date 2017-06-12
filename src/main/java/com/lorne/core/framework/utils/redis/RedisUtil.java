@@ -1,5 +1,6 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.redis;
 
+import com.lorne.core.framework.utils.config.ConfigHelper;
 import redis.clients.jedis.BinaryClient;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -32,10 +33,10 @@ public final class RedisUtil {
      */
     static {
 
-        ConfigurationHelper configurationHelper = new ConfigurationHelper("redis.properties");
-        ADDR = configurationHelper.getStringValue("redis.ip");
-        PORT = configurationHelper.getIntValue("redis.port");
-        AUTH = configurationHelper.getStringValue("redis.auth");
+        ConfigHelper configHelper = new ConfigHelper("redis.properties");
+        ADDR = configHelper.getStringValue("redis.ip");
+        PORT = configHelper.getIntValue("redis.port");
+        AUTH = configHelper.getStringValue("redis.auth");
 
         try {
             JedisPoolConfig config = new JedisPoolConfig();

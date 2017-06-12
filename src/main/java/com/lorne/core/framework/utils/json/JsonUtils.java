@@ -1,4 +1,4 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.json;
 
 import net.sf.json.JSONObject;
 
@@ -82,19 +82,7 @@ public class JsonUtils {
 
     public static Integer getInteger(String json, String key,
                                  Integer defaultVal) {
-        JSONObject jsonObject = JSONObject.fromObject(json);
-        try {
-            if (jsonObject == null) {
-                return defaultVal;
-            }
-            if (jsonObject.has(key)) {
-                return jsonObject.getInt(key);
-            } else {
-                return defaultVal;
-            }
-        } catch (Exception e) {
-            return defaultVal;
-        }
+        return getInt(json,key,defaultVal);
     }
 
 }

@@ -14,10 +14,9 @@ public abstract class AbsBaseController {
     protected boolean isDebug = true;
     protected static final String paramsKey = "params";
 
-    protected int nowPage;
-    protected int pageSize;
+
     protected String key;
-    protected String order;
+
 
     protected static final String dbError = "执行数据库出现异常,请稍后再试.";
 

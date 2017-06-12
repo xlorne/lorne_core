@@ -1,4 +1,4 @@
-package com.lorne.core.framework.utils;
+package com.lorne.core.framework.utils.encode;
 
 import java.io.File;
 import java.io.FileInputStream;
