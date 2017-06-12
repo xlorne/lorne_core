@@ -6,12 +6,12 @@
 
 
 
-    <distributionManagement>
-        <repository>
-            <id>lorne-repository</id>
-            <url>file:/Users/lorne/developer/idea/lorne/repository/</url>
-        </repository>
-    </distributionManagement>
+    <!--<distributionManagement>-->
+        <!--<repository>-->
+            <!--<id>lorne-repository</id>-->
+            <!--<url>file:/Users/lorne/developer/idea/lorne/repository/</url>-->
+        <!--</repository>-->
+    <!--</distributionManagement>-->
 
 
     <repositories>
