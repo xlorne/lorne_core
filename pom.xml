@@ -6,20 +6,20 @@
 
 
 
-    <!--<distributionManagement>-->
-        <!--<repository>-->
-            <!--<id>lorne-repository</id>-->
-            <!--<url>file:/Users/lorne/developer/idea/lorne/repository/</url>-->
-        <!--</repository>-->
-    <!--</distributionManagement>-->
-
-
-    <repositories>
+    <distributionManagement>
         <repository>
-            <id>lorne</id>
-            <url>https://1991wangliang.github.io/repository</url>
+            <id>lorne-repository</id>
+            <url>file:/Users/lorne/developer/idea/lorne/repository/</url>
         </repository>
-    </repositories>
+    </distributionManagement>
+
+
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>lorne</id>-->
+            <!--<url>https://1991wangliang.github.io/repository</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 
 
     <groupId>com.lorne.core</groupId>
@@ -28,6 +28,13 @@
     <!--<packaging>pom</packaging>-->
 
     <properties>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compile.source>1.7</maven.compile.source>
+        <maven.compile.target>1.7</maven.compile.target>
+        <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
+
         <org.springframework-version>4.3.7.RELEASE</org.springframework-version>
         <org.slf4j-version>1.7.7</org.slf4j-version>
 
@@ -48,17 +55,35 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${maven.compile.source}</source>
+                    <target>${maven.compile.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
 
     <dependencies>
 
-        <dependency>
-            <groupId>com.lorne.pom</groupId>
-            <artifactId>lorne_pom</artifactId>
-            <version>1.0.0.RELEASE</version>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
