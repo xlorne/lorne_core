@@ -52,7 +52,7 @@ public class MathDecimal {
         return count.doubleValue();
     }
 
-    public double toInt(){
+    public int toInt(){
         return count.intValue();
     }
 
