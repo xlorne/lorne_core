@@ -94,4 +94,15 @@ public  class Task {
             lock.unlock();
         }
     }
+
+    public void awaitTask(IBack back) {
+        try {
+            lock.lock();
+            condition.await();
+            back.doing();
+        } catch (Throwable e) {
+        } finally {
+            lock.unlock();
+        }
+    }
 }
