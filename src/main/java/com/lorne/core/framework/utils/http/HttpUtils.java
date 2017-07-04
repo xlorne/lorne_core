@@ -54,7 +54,7 @@ public class HttpUtils {
             }
             res = IOUtils.getStringFromInputStream(response);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
             try {
                 httpClient.close();
