@@ -98,8 +98,8 @@ public  class Task {
     public void awaitTask(IBack back) {
         try {
             lock.lock();
-            condition.await();
             back.doing();
+            condition.await();
         } catch (Throwable e) {
         } finally {
             lock.unlock();
