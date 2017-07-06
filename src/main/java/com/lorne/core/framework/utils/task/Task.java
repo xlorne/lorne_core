@@ -85,6 +85,18 @@ public  class Task {
         isNotify= true;
     }
 
+    public void signalTask(IBack back) {
+        try {
+            lock.lock();
+            back.doing();
+            condition.signal();
+        }catch (Throwable e){
+        } finally{
+            lock.unlock();
+        }
+        isNotify= true;
+    }
+
     public void awaitTask() {
         try {
             lock.lock();
