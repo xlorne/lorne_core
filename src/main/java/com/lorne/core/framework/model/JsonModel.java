@@ -1,8 +1,8 @@
 package com.lorne.core.framework.model;
 
 
-import com.lorne.core.framework.utils.json.JsonFormatUtils;
-import com.lorne.core.framework.utils.json.ValueFilter;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 /**
  * @author yuliang
@@ -12,11 +12,8 @@ import com.lorne.core.framework.utils.json.ValueFilter;
 public class JsonModel extends MapModel{
 
     public String toJsonString() {
-        return JsonFormatUtils.toJsonString(this);
+        return JSONObject.toJSONString(this, SerializerFeature.WriteDateUseDateFormat);
     }
 
-    public String toJsonString(ValueFilter... vfs) {
-        return JsonFormatUtils.toJsonString(this, vfs);
-    }
 
 }

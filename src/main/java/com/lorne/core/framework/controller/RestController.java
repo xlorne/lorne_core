@@ -1,14 +1,14 @@
 package com.lorne.core.framework.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.lorne.core.framework.Code;
 import com.lorne.core.framework.exception.DBException;
 import com.lorne.core.framework.exception.ServiceException;
 import com.lorne.core.framework.model.Msg;
 import com.lorne.core.framework.model.Response;
-import com.lorne.core.framework.utils.json.JsonUtils;
+import com.lorne.core.framework.utils.JsonUtils;
 import com.lorne.core.framework.utils.TokenUtils;
-import net.sf.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

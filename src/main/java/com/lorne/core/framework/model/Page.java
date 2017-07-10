@@ -1,6 +1,6 @@
 package com.lorne.core.framework.model;
 
-import com.lorne.core.framework.utils.json.JsonFormatUtils;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
 
@@ -70,6 +70,6 @@ public class Page<T> extends JsonModel {
             }
         }
         data.put("rows", maps);
-        return JsonFormatUtils.toJsonString(data);
+        return JSONObject.toJSONString(data);
     }
 }

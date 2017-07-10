@@ -24,7 +24,7 @@
 
     <groupId>com.lorne.core</groupId>
     <artifactId>lorne_core</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.1.RELEASE</version>
     <!--<packaging>pom</packaging>-->
 
     <properties>
@@ -205,12 +205,14 @@
             <artifactId>cglib</artifactId>
             <version>2.2</version>
         </dependency>
+        
 
         <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.3</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.34</version>
         </dependency>
+
 
 
         <!-- apache commons start-->

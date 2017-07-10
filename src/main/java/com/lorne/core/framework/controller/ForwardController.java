@@ -1,8 +1,9 @@
 package com.lorne.core.framework.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.lorne.core.framework.Constant;
-import net.sf.json.JSONObject;
+//import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +26,9 @@ public class ForwardController extends AbsBaseController{
         try {
             String json = (String) request.getAttribute("json");
             if (StringUtils.isNotBlank(json)) {
-                JSONObject jsonObject = JSONObject.fromObject(json);
+                JSONObject jsonObject = JSONObject.parseObject(json);
                 String action = jsonObject.getString("action");
-                if (jsonObject.has("params")) {
+                if (jsonObject.containsKey("params")) {
                     String params = jsonObject.getString("params");
                     request.setAttribute("params", params);
                 }

@@ -1,8 +1,9 @@
 package com.lorne.core.framework.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lorne.core.framework.utils.encode.MD5Util;
 import com.lorne.core.framework.utils.redis.RedisUtil;
-import net.sf.json.JSONObject;
+
 import redis.clients.jedis.Jedis;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ public class TokenUtils {
     public static String putValue(Map<String,Object> sessionUser, int minutes) {
         Jedis jedis = RedisUtil.getJedis();
         String key = getKey();
-        jedis.set(key, JSONObject.fromObject(sessionUser).toString());
+        jedis.set(key, JSONObject.toJSONString(sessionUser));
         jedis.expire(key, minutes * 60);
         RedisUtil.returnResource(jedis);
         return key;
@@ -27,7 +28,7 @@ public class TokenUtils {
         Jedis jedis = RedisUtil.getJedis();
         String json = jedis.get(key);
         try {
-            sessionUser = json==null?null:JSONObject.fromObject(json);
+            sessionUser = json==null?null:JSONObject.parseObject(json);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
