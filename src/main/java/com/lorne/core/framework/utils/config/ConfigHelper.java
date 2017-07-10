@@ -34,11 +34,10 @@ public class ConfigHelper {
 
     public ConfigHelper(String propertyPath) {
         try {
-            String path = Thread.currentThread().getContextClassLoader().getResource(propertyPath).getPath();
-            propertiesConfiguration = new PropertiesConfiguration(path);
+            propertiesConfiguration = new PropertiesConfiguration(propertyPath);
         } catch (Exception e) {
             throw new RuntimeException(
-                    "Please configure the serverurl in the file " + propertyPath);
+                    "Please configure check  file: " + propertyPath);
         }
     }
 
