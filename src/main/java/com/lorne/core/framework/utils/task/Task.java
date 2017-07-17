@@ -19,6 +19,13 @@ public  class Task {
      * 是否被唤醒
      */
     private boolean isNotify = false;
+
+    /**
+     * 是否被唤醒
+     */
+    private boolean isRemove = false;
+
+
     /**
      * 唯一标示key
      */
@@ -38,6 +45,13 @@ public  class Task {
         return isNotify;
     }
 
+    /**
+     * 是否被移除 true 是 false 否
+     * @return
+     */
+    public boolean isRemove() {
+        return isRemove;
+    }
 
     public int getState() {
         return state;
@@ -71,6 +85,7 @@ public  class Task {
 
     public void remove(){
         ConditionUtils.getInstance().removeKey(getKey());
+        isRemove = true;
     }
 
 
