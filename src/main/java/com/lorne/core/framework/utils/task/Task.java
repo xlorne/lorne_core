@@ -3,27 +3,33 @@ package com.lorne.core.framework.utils.task;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by yuliang on 2016/4/28.
  */
 public  class Task {
 
-    private Lock lock;
-    private Condition condition;
+    private Lock lock ;
+
+    private Condition condition ;
+
     private IBack back;
 
 
     /**
      * 是否被唤醒
      */
-    private boolean isNotify = false;
+    private volatile boolean isNotify = false;
 
     /**
      * 是否被唤醒
      */
-    private boolean isRemove = false;
+    private volatile boolean isRemove = false;
+
+    /**
+     *  是否执行等待
+     */
+    private volatile boolean isAwait = false;
 
 
     /**
@@ -53,6 +59,11 @@ public  class Task {
         return isRemove;
     }
 
+
+    public boolean isAwait() {
+        return isAwait;
+    }
+
     public int getState() {
         return state;
     }
@@ -78,10 +89,11 @@ public  class Task {
         this.back = back;
     }
 
-    public Task() {
-        lock = new ReentrantLock();
-        condition = lock.newCondition();
+    protected Task(Lock lock,Condition condition) {
+        this.lock = lock;
+        this.condition =condition;
     }
+
 
     public void remove(){
         ConditionUtils.getInstance().removeKey(getKey());
@@ -90,31 +102,33 @@ public  class Task {
 
 
     public void signalTask() {
+        while (!isAwait()){}
         try {
             lock.lock();
-            //notify();
+            isNotify = true;
             condition.signal();
         } finally {
             lock.unlock();
         }
-        isNotify= true;
     }
 
     public void signalTask(IBack back) {
+        while (!isAwait()){}
         try {
             lock.lock();
+            isNotify = true;
             back.doing();
             condition.signal();
-        }catch (Throwable e){
-        } finally{
+        } catch (Throwable e) {
+        } finally {
             lock.unlock();
         }
-        isNotify= true;
     }
 
     public void awaitTask() {
         try {
             lock.lock();
+            isAwait = true;
             condition.await();
         } catch (Exception e) {
         } finally {
@@ -126,6 +140,7 @@ public  class Task {
         try {
             lock.lock();
             back.doing();
+            isAwait = true;
             condition.await();
         } catch (Throwable e) {
         } finally {
