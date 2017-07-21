@@ -3,6 +3,7 @@ package com.lorne.core.framework.utils.task;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by yuliang on 2016/4/28.
@@ -89,9 +90,9 @@ public  class Task {
         this.back = back;
     }
 
-    protected Task(Lock lock,Condition condition) {
-        this.lock = lock;
-        this.condition =condition;
+    protected Task() {
+        lock = new ReentrantLock();
+        condition = lock.newCondition();
     }
 
 

@@ -5,17 +5,13 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by yuliang on 2016/4/28.
  */
 public class ConditionUtils {
 
-    private Lock lock;
-    private Condition condition;
+
 
     private static ConditionUtils instance = null;
 
@@ -23,8 +19,7 @@ public class ConditionUtils {
 
 
     private ConditionUtils(){
-        lock = new ReentrantLock();
-        condition = lock.newCondition();
+
     }
 
     public static ConditionUtils getInstance() {
@@ -41,7 +36,7 @@ public class ConditionUtils {
 
 
     public Task createTask(String key) {
-        Task task = new Task(lock,condition);
+        Task task = new Task();
         task.setKey(key);
         taskMap.put(key, task);
         return task;
