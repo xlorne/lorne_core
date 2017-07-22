@@ -14,7 +14,7 @@ public  class Task {
 
     private Condition condition ;
 
-    private IBack back;
+    private volatile IBack back;
 
 
     /**
