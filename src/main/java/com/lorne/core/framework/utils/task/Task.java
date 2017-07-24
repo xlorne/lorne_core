@@ -17,6 +17,13 @@ public  class Task {
     private volatile IBack back;
 
 
+    private Object obj;
+
+    private volatile IBack execute;
+
+    private volatile boolean hasExecute = false;
+
+
     /**
      * 是否被唤醒
      */
@@ -42,6 +49,8 @@ public  class Task {
      * 数据状态用于业务处理
      */
     private int state = 0;
+
+
 
 
     /**
@@ -96,13 +105,26 @@ public  class Task {
     }
 
 
+    public synchronized Object  execute(IBack back) throws Throwable{
+        try {
+            execute = back;
+            hasExecute = true;
+            executeSignalTask();
+            while (execute!=null){
+                Thread.sleep(1);
+            }
+            return obj;
+        }finally {
+            obj = null;
+        }
+    }
+
     public void remove(){
         ConditionUtils.getInstance().removeKey(getKey());
         isRemove = true;
     }
 
-
-    public void signalTask() {
+    private void executeSignalTask() {
         while (!isAwait()){}
         try {
             lock.lock();
@@ -113,16 +135,53 @@ public  class Task {
         }
     }
 
+    public void signalTask() {
+        if (!hasExecute) {
+            executeSignalTask();
+        }else{
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void signalTask(IBack back) {
-        while (!isAwait()){}
-        try {
-            lock.lock();
-            isNotify = true;
-            back.doing();
-            condition.signal();
-        } catch (Throwable e) {
-        } finally {
-            lock.unlock();
+        if (!hasExecute) {
+            while (!isAwait()){}
+            try {
+                lock.lock();
+                isNotify = true;
+                back.doing();
+                condition.signal();
+            } catch (Throwable e) {
+            } finally {
+                lock.unlock();
+            }
+        }else{
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+
+    private void waitTask() throws Throwable{
+        condition.await();
+        if(hasExecute){
+            try {
+                obj = execute.doing();
+            }catch (Throwable e){
+                obj = e;
+            }
+            hasExecute = false;
+            execute = null;
+            waitTask();
         }
     }
 
@@ -130,19 +189,21 @@ public  class Task {
         try {
             lock.lock();
             isAwait = true;
-            condition.await();
-        } catch (Exception e) {
+            waitTask();
+        } catch (Throwable e) {
         } finally {
             lock.unlock();
         }
     }
+
+
 
     public void awaitTask(IBack back) {
         try {
             lock.lock();
             back.doing();
             isAwait = true;
-            condition.await();
+            waitTask();
         } catch (Throwable e) {
         } finally {
             lock.unlock();
