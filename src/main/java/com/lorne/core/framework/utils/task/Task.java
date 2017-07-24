@@ -128,7 +128,6 @@ public  class Task {
         while (!isAwait()){}
         try {
             lock.lock();
-            isNotify = true;
             condition.signal();
         } finally {
             lock.unlock();
@@ -137,7 +136,14 @@ public  class Task {
 
     public void signalTask() {
         if (!hasExecute) {
-            executeSignalTask();
+            while (!isAwait()){}
+            try {
+                lock.lock();
+                isNotify = true;
+                condition.signal();
+            } finally {
+                lock.unlock();
+            }
         }else{
             try {
                 Thread.sleep(1);
