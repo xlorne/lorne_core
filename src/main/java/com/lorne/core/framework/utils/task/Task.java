@@ -105,13 +105,15 @@ public  class Task {
     }
 
 
-    public synchronized Object  execute(IBack back) throws Throwable{
+    public synchronized Object execute(IBack back){
         try {
             execute = back;
             hasExecute = true;
             executeSignalTask();
             while (execute!=null){
-                Thread.sleep(1);
+                try {
+                    Thread.sleep(1);
+                }catch (Exception e){}
             }
             return obj;
         }finally {
@@ -135,45 +137,42 @@ public  class Task {
     }
 
     public void signalTask() {
-        if (!hasExecute) {
-            while (!isAwait()){}
-            try {
-                lock.lock();
-                isNotify = true;
-                condition.signal();
-            } finally {
-                lock.unlock();
-            }
-        }else{
+        while (hasExecute) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+        while (!isAwait()){}
+        try {
+            lock.lock();
+            isNotify = true;
+            condition.signal();
+        } finally {
+            lock.unlock();
         }
     }
 
     public void signalTask(IBack back) {
-        if (!hasExecute) {
-            while (!isAwait()){}
-            try {
-                lock.lock();
-                isNotify = true;
-                back.doing();
-                condition.signal();
-            } catch (Throwable e) {
-            } finally {
-                lock.unlock();
-            }
-        }else{
+        while (hasExecute) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
-
+        while (!isAwait()){}
+        try {
+            lock.lock();
+            isNotify = true;
+            try {
+                back.doing();
+            }catch (Throwable e){}
+            condition.signal();
+        } finally {
+            lock.unlock();
+        }
     }
 
 
@@ -207,7 +206,9 @@ public  class Task {
     public void awaitTask(IBack back) {
         try {
             lock.lock();
-            back.doing();
+            try {
+                back.doing();
+            }catch (Throwable e){}
             isAwait = true;
             waitTask();
         } catch (Throwable e) {
