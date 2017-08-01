@@ -110,10 +110,13 @@ public  class Task {
     protected Task() {
 //        lock = new ReentrantLock();
 //        condition = lock.newCondition();
-        init();
     }
 
     private void init(){
+        if(isAwait){
+            throw new RuntimeException("no notify .");
+        }
+
         isNotify = false;
         isAwait = false;
         key = null;
@@ -179,37 +182,39 @@ public  class Task {
         synchronized (this){
             isNotify = true;
             notify();
+            isAwait = false;
         }
     }
 
-    public void signalTask(IBack back) {
-        while (hasExecute) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        while (!isAwait()){}
-//        try {
-//            lock.lock();
+//    public void signalTask(IBack back) {
+//        while (hasExecute) {
+//            try {
+//                Thread.sleep(1);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        while (!isAwait()){}
+////        try {
+////            lock.lock();
+////            isNotify = true;
+////            try {
+////                back.doing();
+////            }catch (Throwable e){}
+////            condition.signal();
+////        } finally {
+////            lock.unlock();
+////        }
+//
+//        synchronized (this){
 //            isNotify = true;
 //            try {
 //                back.doing();
-//            }catch (Throwable e){}
-//            condition.signal();
-//        } finally {
-//            lock.unlock();
+//            } catch (Throwable throwable) { }
+//            notify();
+//            isAwait = false;
 //        }
-
-        synchronized (this){
-            isNotify = true;
-            try {
-                back.doing();
-            } catch (Throwable throwable) { }
-            notify();
-        }
-    }
+//    }
 
 
     private void waitTask() throws Throwable{
@@ -253,32 +258,32 @@ public  class Task {
 
 
 
-    public void awaitTask(IBack back) {
-//        try {
-//            lock.lock();
+//    public void awaitTask(IBack back) {
+////        try {
+////            lock.lock();
+////            try {
+////                back.doing();
+////            }catch (Throwable e){}
+////            isAwait = true;
+////            waitTask();
+////        } catch (Throwable e) {
+////        } finally {
+////            lock.unlock();
+////        }
+//
+//        synchronized (this){
 //            try {
 //                back.doing();
-//            }catch (Throwable e){}
+//            }catch (Throwable e){
+//                e.printStackTrace();
+//            }
 //            isAwait = true;
-//            waitTask();
-//        } catch (Throwable e) {
-//        } finally {
-//            lock.unlock();
+//            try {
+//                waitTask();
+//            } catch (Throwable e) {
+//                e.printStackTrace();
+//            }
 //        }
-
-        synchronized (this){
-            try {
-                back.doing();
-            }catch (Throwable e){
-                e.printStackTrace();
-            }
-            isAwait = true;
-            try {
-                waitTask();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    }
 
 }
