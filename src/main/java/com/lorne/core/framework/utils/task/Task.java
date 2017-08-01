@@ -1,23 +1,23 @@
 package com.lorne.core.framework.utils.task;
 
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+//import java.util.concurrent.locks.Condition;
+//import java.util.concurrent.locks.Lock;
+//import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by yuliang on 2016/4/28.
  */
 public  class Task {
 
-    private Lock lock ;
+//    private Lock lock ;
+//
+//    private Condition condition ;
 
-    private Condition condition ;
 
     private volatile IBack back;
 
-
-    private Object obj;
+    private volatile Object obj;
 
     private volatile IBack execute;
 
@@ -29,10 +29,6 @@ public  class Task {
      */
     private volatile boolean isNotify = false;
 
-    /**
-     * 是否被唤醒
-     */
-    private volatile boolean isRemove = false;
 
     /**
      *  是否执行等待
@@ -48,9 +44,13 @@ public  class Task {
     /**
      * 数据状态用于业务处理
      */
-    private int state = 0;
+    private volatile int state = 0;
 
 
+    /**
+     * 是否被使用
+     */
+    private volatile int isUsed = 0;
 
 
     /**
@@ -66,12 +66,20 @@ public  class Task {
      * @return
      */
     public boolean isRemove() {
-        return isRemove;
+        return !ConditionUtils.getInstance().hasKey(getKey());
     }
 
 
     public boolean isAwait() {
         return isAwait;
+    }
+
+    public int getIsUsed() {
+        return isUsed;
+    }
+
+    public void setIsUsed(int isUsed) {
+        this.isUsed = isUsed;
     }
 
     public int getState() {
@@ -100,8 +108,21 @@ public  class Task {
     }
 
     protected Task() {
-        lock = new ReentrantLock();
-        condition = lock.newCondition();
+//        lock = new ReentrantLock();
+//        condition = lock.newCondition();
+        init();
+    }
+
+    private void init(){
+        isNotify = false;
+        isAwait = false;
+        key = null;
+        state = 0;
+        hasExecute = false;
+        back=null;
+        obj = null;
+        execute = null;
+        isUsed = 0;
     }
 
 
@@ -123,16 +144,19 @@ public  class Task {
 
     public void remove(){
         ConditionUtils.getInstance().removeKey(getKey());
-        isRemove = true;
+        init();
     }
 
     private void executeSignalTask() {
         while (!isAwait()){}
-        try {
-            lock.lock();
-            condition.signal();
-        } finally {
-            lock.unlock();
+//        try {
+//            lock.lock();
+//            condition.signal();
+//        } finally {
+//            lock.unlock();
+//        }
+        synchronized (this){
+            notify();
         }
     }
 
@@ -145,12 +169,16 @@ public  class Task {
             }
         }
         while (!isAwait()){}
-        try {
-            lock.lock();
+//        try {
+//            lock.lock();
+//            isNotify = true;
+//            condition.signal();
+//        } finally {
+//            lock.unlock();
+//        }
+        synchronized (this){
             isNotify = true;
-            condition.signal();
-        } finally {
-            lock.unlock();
+            notify();
         }
     }
 
@@ -163,25 +191,38 @@ public  class Task {
             }
         }
         while (!isAwait()){}
-        try {
-            lock.lock();
+//        try {
+//            lock.lock();
+//            isNotify = true;
+//            try {
+//                back.doing();
+//            }catch (Throwable e){}
+//            condition.signal();
+//        } finally {
+//            lock.unlock();
+//        }
+
+        synchronized (this){
             isNotify = true;
             try {
                 back.doing();
-            }catch (Throwable e){}
-            condition.signal();
-        } finally {
-            lock.unlock();
+            } catch (Throwable throwable) { }
+            notify();
         }
     }
 
 
     private void waitTask() throws Throwable{
-        condition.await();
+        //condition.await();
+        synchronized (this){
+            wait();
+        }
+
         if(hasExecute){
             try {
                 obj = execute.doing();
             }catch (Throwable e){
+                e.printStackTrace();
                 obj = e;
             }
             hasExecute = false;
@@ -191,29 +232,53 @@ public  class Task {
     }
 
     public void awaitTask() {
-        try {
-            lock.lock();
-            isAwait = true;
-            waitTask();
-        } catch (Throwable e) {
-        } finally {
-            lock.unlock();
+//        try {
+//            lock.lock();
+//            isAwait = true;
+//            waitTask();
+//        } catch (Throwable e) {
+//        } finally {
+//            lock.unlock();
+//        }
+//
+        synchronized (this){
+            try {
+                isAwait = true;
+                waitTask();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
     }
 
 
 
     public void awaitTask(IBack back) {
-        try {
-            lock.lock();
+//        try {
+//            lock.lock();
+//            try {
+//                back.doing();
+//            }catch (Throwable e){}
+//            isAwait = true;
+//            waitTask();
+//        } catch (Throwable e) {
+//        } finally {
+//            lock.unlock();
+//        }
+
+        synchronized (this){
             try {
                 back.doing();
-            }catch (Throwable e){}
+            }catch (Throwable e){
+                e.printStackTrace();
+            }
             isAwait = true;
-            waitTask();
-        } catch (Throwable e) {
-        } finally {
-            lock.unlock();
+            try {
+                waitTask();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }
