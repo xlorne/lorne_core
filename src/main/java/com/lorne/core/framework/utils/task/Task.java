@@ -119,7 +119,7 @@ public  class Task {
 
         isNotify = false;
         isAwait = false;
-        key = null;
+        //key = null;
         state = 0;
         hasExecute = false;
         back=null;
