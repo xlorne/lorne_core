@@ -51,7 +51,6 @@ public class ConditionUtils {
     public void removeKey(String key) {
         if (StringUtils.isNotEmpty(key)) {
             taskMap.remove(key);
-            System.out.println("taskMap-size->"+taskMap.size());
         }
     }
 
