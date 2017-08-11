@@ -1,6 +1,7 @@
 package com.lorne.core.framework.utils.task;
 
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -106,10 +107,12 @@ public  class Task {
             execute = back;
             hasExecute = true;
             executeSignalTask();
-            while (execute!=null){
+            while (execute!=null&&!Thread.currentThread().interrupted()){
                 try {
-                    Thread.sleep(1);
-                }catch (Exception e){}
+                    TimeUnit.MILLISECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             return obj;
         }finally {
@@ -122,7 +125,13 @@ public  class Task {
     }
 
     private void executeSignalTask() {
-        while (!isAwait()){}
+        while (!isAwait&&!Thread.currentThread().interrupted()){
+            try {
+                TimeUnit.MILLISECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             lock.lock();
             condition.signal();
@@ -132,14 +141,20 @@ public  class Task {
     }
 
     public void signalTask() {
-        while (hasExecute) {
+        while (hasExecute&&!Thread.currentThread().interrupted()) {
             try {
-                Thread.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        while (!isAwait()){}
+        while (!isAwait&&!Thread.currentThread().interrupted()){
+            try {
+                TimeUnit.MILLISECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             lock.lock();
             isNotify = true;
@@ -150,14 +165,20 @@ public  class Task {
     }
 
     public void signalTask(IBack back) {
-        while (hasExecute) {
+        while (hasExecute&&!Thread.currentThread().interrupted()) {
             try {
-                Thread.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        while (!isAwait()){}
+        while (!isAwait&&!Thread.currentThread().interrupted()){
+            try {
+                TimeUnit.MILLISECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             lock.lock();
             isNotify = true;
