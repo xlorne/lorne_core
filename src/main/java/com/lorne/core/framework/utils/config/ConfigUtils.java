@@ -21,7 +21,7 @@ public class ConfigUtils {
     }
 
 
-    public String[] getStringArrayValue(String filePath, String key) {
+    public static String[] getStringArrayValue(String filePath, String key) {
         ConfigHelper helper = new ConfigHelper(filePath);
         return helper.getStringArrayValue(key);
     }
