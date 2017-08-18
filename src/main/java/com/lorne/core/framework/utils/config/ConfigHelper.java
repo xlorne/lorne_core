@@ -15,6 +15,10 @@ public class ConfigHelper {
         return propertiesConfiguration.getString(key);
     }
 
+    public String[] getStringArrayValue(String key) {
+        return propertiesConfiguration.getStringArray(key);
+    }
+
     public void setProperty(String key, Object val) {
         propertiesConfiguration.setProperty(key, val);
         try {

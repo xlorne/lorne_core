@@ -20,4 +20,10 @@ public class ConfigUtils {
         helper.setProperty(key, val);
     }
 
+
+    public String[] getStringArrayValue(String filePath, String key) {
+        ConfigHelper helper = new ConfigHelper(filePath);
+        return helper.getStringArrayValue(key);
+    }
+
 }
