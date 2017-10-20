@@ -1,5 +1,5 @@
 
-### 框架介绍V2.0：
+### 框架介绍V1.0.0：
 
   该框架属于工具类底层框架。
   
@@ -12,5 +12,14 @@
 4. 封装了Thread本地多线程同步数据汇总框架  
 5. 封装了本地配置资源文件读写    
 6. 封装了DateUtils MathUtils KidUtils JsonUtils 常用工具类封装  
+
+
+```
+ <dependency>
+    <groupId>com.github.1991wangliang</groupId>
+    <artifactId>lorne_core</artifactId>
+    <version>1.0.0</version>
+ </dependency>
+```
 
 

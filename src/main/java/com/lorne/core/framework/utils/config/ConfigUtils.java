@@ -1,6 +1,8 @@
 package com.lorne.core.framework.utils.config;
 
 /**
+ *
+ * 配置文件工具类
  * Created by yuliang on 2017/4/7.
  */
 public class ConfigUtils {

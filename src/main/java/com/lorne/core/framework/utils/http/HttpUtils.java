@@ -1,7 +1,9 @@
 package com.lorne.core.framework.utils.http;
 
 
+import com.lorne.core.framework.exception.HttpException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -20,6 +22,8 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +40,7 @@ import java.util.List;
  */
 public class HttpUtils {
 
+    private static  Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
     /**
      * 执行http请求方法
@@ -54,7 +59,7 @@ public class HttpUtils {
             }
             res = IOUtils.getStringFromInputStream(response);
         } catch (IOException e) {
-            //e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -111,7 +116,7 @@ public class HttpUtils {
      *
      * @param url    请求地址
      * @param params 请求参数
-     * @return
+     * @return  result 网络结果
      */
     public static String post(String url, PostParam... params) {
         CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
@@ -127,9 +132,15 @@ public class HttpUtils {
         return execute(httpClient, request);
     }
 
+    /**
+     *  http post 请求
+     * @param url   请求地址
+     * @param postParams    字符串型地址
+     * @return  网络相应结果
+     */
     public static String post(String url, String postParams) {
         HttpEntity postEntity = null;
-        if (postParams != null && !postParams.equalsIgnoreCase("")) {
+        if (StringUtils.isNotEmpty(postParams)) {
             String[] params = postParams.split("&");
             List<NameValuePair> formParams = new ArrayList<NameValuePair>();
             if (params != null && params.length > 0)
@@ -166,19 +177,24 @@ public class HttpUtils {
     /**
      * 提交字符串数据
      *
-     * @param url
-     * @param str
-     * @return
-     * @throws Exception
+     * @param url   请求地址
+     * @param str   请求数据
+     * @return  result 相应结果
+     * @throws HttpException  StringEntity(str)转码异常
      */
-    public static String postString(String url, String str) throws Exception {
-        HttpEntity postEntity = new StringEntity(str);
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpPost request = new HttpPost(url);
-        if (postEntity != null) {
-            request.setEntity(postEntity);
+    public static String postString(String url, String str) throws HttpException {
+        try {
+            HttpEntity postEntity = new StringEntity(str);
+            CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
+            HttpPost request = new HttpPost(url);
+            if (postEntity != null) {
+                request.setEntity(postEntity);
+            }
+            return execute(httpClient, request);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            throw new HttpException(e);
         }
-        return execute(httpClient, request);
     }
 
     /**
@@ -186,12 +202,12 @@ public class HttpUtils {
      *
      * @param url  请求地址
      * @param path 保存路径
-     * @return
+     * @return  result 相应结果
      */
     public static boolean download(String url, String path) {
         CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
         HttpGet request = new HttpGet(url);
-        CloseableHttpResponse response = null;
+        CloseableHttpResponse response;
         boolean res = false;
         try {
             response = httpClient.execute(request, CookieContext.createHttpClientContext());
@@ -209,7 +225,7 @@ public class HttpUtils {
                 res = true;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -226,7 +242,7 @@ public class HttpUtils {
      *
      * @param url        请求地址
      * @param fileParams 文件参数
-     * @return
+     * @return  result 相应结果
      */
     public static String postFile(String url, PostFileParam... fileParams) {
         if (fileParams == null) {
@@ -280,7 +296,7 @@ public class HttpUtils {
      *
      * @param url  请求地址
      * @param json 请求参数
-     * @return
+     * @return  result 相应结果
      */
     public static String postJson(String url, String json) {
         return postString(url, json, "application/json");
@@ -292,7 +308,7 @@ public class HttpUtils {
      * @param url  请求地址
      * @param data 请求数据
      * @param type 请求数据格式
-     * @return
+     * @return  result 相应结果
      */
     public static String postString(String url, String data, String type) {
         CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
@@ -310,7 +326,7 @@ public class HttpUtils {
      *
      * @param url 请求地址
      * @param xml 请求参数
-     * @return
+     * @return  result 相应结果
      */
     public static String postXml(String url, String xml) {
         return postString(url, xml, "text/xml");
