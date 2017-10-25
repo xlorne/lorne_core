@@ -4,6 +4,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
+ * 配置文件读取工具类助手
  * Created by yuliang on 2015/8/3.
  */
 public class ConfigHelper {

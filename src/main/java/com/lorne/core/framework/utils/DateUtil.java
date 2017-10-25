@@ -59,14 +59,14 @@ public final class DateUtil {
     /**
      * 获取增加小时后的 Date
      *
-     * @param date
-     * @param i
+     * @param date  时间
+     * @param v 值
      * @return squall add 20100225
      */
-    public static Date addHour(Date date, int i) {
+    public static Date addHour(Date date, int v) {
         Calendar calendar = getDefaultCalendar();
         calendar.setTime(date);
-        calendar.add(Calendar.HOUR, i);
+        calendar.add(Calendar.HOUR, v);
         return calendar.getTime();
     }
 
@@ -270,9 +270,8 @@ public final class DateUtil {
 
     /**
      * 一周的日期
-     *
-     * @param date
-     * @return
+     * @param date  时间
+     * @return  结果
      */
     public static List<Date> getWeekDayOfYear(Date date) {
         Calendar calendar = getCalendarFromDate(date);
@@ -295,10 +294,10 @@ public final class DateUtil {
     /**
      * 获取一年中某周,星期几的日期
      *
-     * @param yearNum
-     * @param weekNum
-     * @param dayOfWeek
-     * @return
+     * @param yearNum   年
+     * @param weekNum   那一周
+     * @param dayOfWeek 周几
+     * @return  日期
      */
     private static Date getDateOfYearWeek(int yearNum, int weekNum,
                                           int dayOfWeek) {
@@ -318,8 +317,8 @@ public final class DateUtil {
     /**
      * 获取指定日期是一周的第几天,星期日是第一天
      *
-     * @param date
-     * @return
+     * @param date 日期
+     * @return  结果
      */
     public static int getDayOfWeek(Date date) {
         Calendar calendar = getCalendarFromDate(date);
@@ -327,14 +326,6 @@ public final class DateUtil {
         return calendar.get(Calendar.DAY_OF_WEEK) - 1;
     }
 
-//	public static Date parseDateE(String date, String pattern) {
-//		SimpleDateFormat format = new SimpleDateFormat(pattern);
-//		try {
-//			return format.parse(date);
-//		} catch (ParseException e) {
-//			throw new RuntimeException("date pattern should be " + pattern);
-//		}
-//	}
 
     public static Date getDefaultDate() {
         Calendar calendar = getCalendarFromDate(new Date());
@@ -359,8 +350,8 @@ public final class DateUtil {
     /**
      * 清空日期的时间
      *
-     * @param date
-     * @return
+     * @param date 日期
+     * @return  结果
      */
     public static Date clearTime(Date date) {
         Calendar calendar = getCalendarFromDate(date);
@@ -395,23 +386,23 @@ public final class DateUtil {
     /**
      * +周
      *
-     * @param date
-     * @param i
-     * @return
+     * @param date  日期
+     * @param v 添加的值
+     * @return  结果
      */
-    public static Date addWeek(Date date, int i) {
+    public static Date addWeek(Date date, int v) {
         Calendar calendar = getDefaultCalendar();
         calendar.setTime(date);
-        calendar.add(Calendar.WEEK_OF_YEAR, i);
+        calendar.add(Calendar.WEEK_OF_YEAR, v);
         return calendar.getTime();
     }
 
     /**
      * 本周指定星期几的日期
      *
-     * @param date
-     * @param monday
-     * @return
+     * @param date  指定的日期
+     * @param day   那一天
+     * @return  结果
      */
     public static String getCurrentWeekDay(Date date, int day) {
         Calendar calendar = getCalendarFromDate(date);
@@ -426,14 +417,14 @@ public final class DateUtil {
     /**
      * 指定年范围
      *
-     * @param fromYear
-     * @param toYear
-     * @return
+     * @param fromYear  从那一年
+     * @param toYear    到那一年
+     * @return    满足的结果
      */
     public static List<String> getYearRange(int fromYear, int toYear) {
         List<String> result = new ArrayList<String>();
         for (int i = 0; i <= toYear - fromYear; i++) {
-            result.add("" + (toYear - i));
+            result.add(String.format("%d",toYear - i));
         }
         return result;
     }
@@ -441,11 +432,10 @@ public final class DateUtil {
     /**
      * 获得指定年月的所有日期
      *
-     * @param year
-     * @param month
-     * @return
+     * @param year  年
+     * @param month 月
+     * @return  list日期
      */
-    @SuppressWarnings("deprecation")
     public static List<String> getMonthRange(int year, int month) {
         Calendar calendar = getDefaultCalendar();
         calendar.set(Calendar.YEAR, year);
@@ -453,7 +443,7 @@ public final class DateUtil {
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         List<String> result = new ArrayList<String>();
         Date date = calendar.getTime();
-        while (date.getMonth() == calendar.get(Calendar.MONTH)) {
+        while ((month-1) == calendar.get(Calendar.MONTH)) {
             result.add(formatDate(date));
             date = addDate(date, 1);
         }
@@ -535,9 +525,9 @@ public final class DateUtil {
 
     public static List<String> getFullYear() {
         List<String> list = new ArrayList<>();
-        Date date = new Date();
-        int month = date.getMonth() + 1;
-        int year = date.getYear() + 1900;
+        Calendar calendar = Calendar.getInstance();
+        int month =  calendar.get(Calendar.MONTH) + 1;
+        int year =  calendar.get(Calendar.YEAR) + 1900;
         for (int i = 0; i < 12; i++) {
             if (month == 0) {
                 month = 12;

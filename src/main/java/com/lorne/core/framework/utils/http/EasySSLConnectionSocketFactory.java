@@ -25,12 +25,6 @@ public class EasySSLConnectionSocketFactory implements ConnectionSocketFactory {
     }
 
 
-//    public Socket createSocket(Socket socket, String host, int port,
-//                               boolean autoClose) throws IOException {
-//        return getSSLContext().getSocketFactory().createSocket(socket, host,
-//                port, autoClose);
-//    }
-
     private static SSLContext createEasySSLContext() throws IOException {
         try {
             SSLContext context = SSLContext.getInstance("TLS");
@@ -51,7 +45,6 @@ public class EasySSLConnectionSocketFactory implements ConnectionSocketFactory {
 
     @Override
     public Socket connectSocket(int connectTimeout, Socket sock, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException {
-        //SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket(sock, host.toHostString(), remoteAddress.getPort(), false));
         SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket(context));
         if (localAddress != null) {
             InetSocketAddress isa = new InetSocketAddress(localAddress.getAddress(),

@@ -7,12 +7,7 @@ public class MathUtils {
     // 默认除法运算精度
     private static final int DEF_DIV_SCALE = 10;
 
-    /**
-     * 加法运算
-     *
-     * @param ds
-     * @return
-     */
+
     public static double add(double... ds) {
         BigDecimal count = new BigDecimal("0");
         if (ds != null && ds.length > 0) {
@@ -25,12 +20,7 @@ public class MathUtils {
     }
 
 
-    /**
-     * 减法运算
-     *
-     * @param ds
-     * @return
-     */
+
     public static double sub(double... ds) {
         if (ds == null)
             return 0;
@@ -48,12 +38,7 @@ public class MathUtils {
         return count.doubleValue();
     }
 
-    /**
-     * 乘法运算
-     *
-     * @param ds
-     * @return
-     */
+
     public static double mul(double... ds) {
         if(ds==null)
             return 0;
@@ -71,12 +56,7 @@ public class MathUtils {
         return count.doubleValue();
     }
 
-    /**
-     * 除法运算
-     *
-     * @param ds
-     * @return
-     */
+
     public static double div(double... ds) {
         return div(DEF_DIV_SCALE, ds);
     }

@@ -1,22 +1,27 @@
 package com.lorne.core.framework.utils.encode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * md5 加密工具类
+ */
 public class MD5Util {
 
-    public static String convertMD5(String inStr) {
 
+    private static Logger logger = LoggerFactory.getLogger(MD5Util.class);
+
+    public static String convertMD5(String inStr) {
         char[] a = inStr.toCharArray();
         for (int i = 0; i < a.length; i++) {
             a[i] = (char) (a[i] ^ 't');
         }
-        String s = new String(a);
-        return s;
-
+        return new String(a);
     }
 
     public static String string2MD5(String inStr) {
@@ -45,14 +50,6 @@ public class MD5Util {
 
     }
 
-    public static String md5(String str) {
-        try {
-            return md5(str.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public static String md5(File file) {
         try {
@@ -73,33 +70,38 @@ public class MD5Util {
             byte[] bytes = msgDigest.digest();
             if (fileInputStream != null)
                 fileInputStream.close();
-            byte tb;
-            char low;
-            char high;
-            char tmpChar;
-            String md5Str = new String();
-            for (int i = 0; i < bytes.length; i++) {
-                tb = bytes[i];
-                tmpChar = (char) ((tb >>> 4) & 0x000f);
-                if (tmpChar >= 10) {
-                    high = (char) (('a' + tmpChar) - 10);
-                } else {
-                    high = (char) ('0' + tmpChar);
-                }
-                md5Str += high;
-                tmpChar = (char) (tb & 0x000f);
-                if (tmpChar >= 10) {
-                    low = (char) (('a' + tmpChar) - 10);
-                } else {
-                    low = (char) ('0' + tmpChar);
-                }
-                md5Str += low;
-            }
-            return md5Str;
+            return byteToString(bytes);
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         }
+    }
+
+
+    private static String byteToString(byte[] bytes){
+        byte tb;
+        char low;
+        char high;
+        char tmpChar;
+        String md5Str="";
+        for (int i = 0; i < bytes.length; i++) {
+            tb = bytes[i];
+            tmpChar = (char) ((tb >>> 4) & 0x000f);
+            if (tmpChar >= 10) {
+                high = (char) (('a' + tmpChar) - 10);
+            } else {
+                high = (char) ('0' + tmpChar);
+            }
+            md5Str += high;
+            tmpChar = (char) (tb & 0x000f);
+            if (tmpChar >= 10) {
+                low = (char) (('a' + tmpChar) - 10);
+            } else {
+                low = (char) ('0' + tmpChar);
+            }
+            md5Str += low;
+        }
+        return md5Str;
     }
 
     public static String md5(byte[] bs) {
@@ -107,44 +109,13 @@ public class MD5Util {
         try {
             msgDigest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage());
             throw new IllegalStateException(
                     "System doesn't support MD5 algorithm.");
         }
-
         msgDigest.update(bs);
-
         byte[] bytes = msgDigest.digest();
-
-        byte tb;
-        char low;
-        char high;
-        char tmpChar;
-
-        String md5Str = new String();
-
-        for (int i = 0; i < bytes.length; i++) {
-            tb = bytes[i];
-
-            tmpChar = (char) ((tb >>> 4) & 0x000f);
-
-            if (tmpChar >= 10) {
-                high = (char) (('a' + tmpChar) - 10);
-            } else {
-                high = (char) ('0' + tmpChar);
-            }
-
-            md5Str += high;
-            tmpChar = (char) (tb & 0x000f);
-
-            if (tmpChar >= 10) {
-                low = (char) (('a' + tmpChar) - 10);
-            } else {
-                low = (char) ('0' + tmpChar);
-            }
-
-            md5Str += low;
-        }
-        return md5Str;
+        return byteToString(bytes);
     }
 
     public static byte[] md5Byte(String str) {
@@ -153,14 +124,12 @@ public class MD5Util {
             utfBytes = str.getBytes("UTF-8");
             MessageDigest mdTemp = MessageDigest.getInstance("MD5");
             mdTemp.update(utfBytes);
-
             return mdTemp.digest();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
 }
