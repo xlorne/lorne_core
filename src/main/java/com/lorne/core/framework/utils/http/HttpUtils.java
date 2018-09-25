@@ -214,7 +214,7 @@ public class HttpUtils {
      * @return  result 相应结果
      */
     public static String postXml(String url, String xml) {
-        return postString(url, xml, "text/xml");
+        return postString(url, xml, MediaType.APPLICATION_XML.getType());
     }
 
 }
