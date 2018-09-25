@@ -9,8 +9,5 @@
         <module name="lorne_core" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="lorne_core" target="1.7" />
-    </bytecodeTargetLevel>
   </component>
 </project>

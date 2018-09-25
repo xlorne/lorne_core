@@ -4,34 +4,19 @@ package com.lorne.core.framework.utils.http;
 import com.lorne.core.framework.exception.HttpException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,33 +27,7 @@ public class HttpUtils {
 
     private static  Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-    /**
-     * 执行http请求方法
-     *
-     * @param httpClient
-     * @param request
-     * @return
-     */
-    public static String execute(CloseableHttpClient httpClient, HttpRequestBase request) {
-        String res = null;
-        try {
-            CloseableHttpResponse response = httpClient.execute(request, CookieContext.createHttpClientContext());
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
-                String location = response.getFirstHeader("Location").getValue();
-                return get(location);
-            }
-            res = IOUtils.getStringFromInputStream(response);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } finally {
-            try {
-                httpClient.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-        return res;
-    }
+    private static RestTemplate restTemplate = new RestTemplate();
 
 
     /**
@@ -78,9 +37,7 @@ public class HttpUtils {
      * @return
      */
     public static String get(String url) {
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpGet request = new HttpGet(url);
-        return execute(httpClient, request);
+        return restTemplate.getForObject(url,String.class);
     }
 
 
@@ -97,18 +54,8 @@ public class HttpUtils {
 
 
     public static String post(String url, List<PostParam> params) {
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpPost request = new HttpPost(url);
-        if (params != null) {
-            List<NameValuePair> pairList = new ArrayList<NameValuePair>(params.size());
-            for (PostParam param : params) {
-                NameValuePair pair = new BasicNameValuePair(param.getName(), param.getValue());
-                pairList.add(pair);
-            }
-            request.setEntity(new UrlEncodedFormEntity(pairList, Charset.forName("UTF-8")));
-        }
-
-        return execute(httpClient, request);
+        PostParam[] postParams =  new PostParam[params.size()];
+        return post(url,params.toArray(postParams));
     }
 
     /**
@@ -119,17 +66,16 @@ public class HttpUtils {
      * @return  result 网络结果
      */
     public static String post(String url, PostParam... params) {
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpPost request = new HttpPost(url);
-        if (params != null) {
-            List<NameValuePair> pairList = new ArrayList<NameValuePair>(params.length);
-            for (PostParam param : params) {
-                NameValuePair pair = new BasicNameValuePair(param.getName(), param.getValue());
-                pairList.add(pair);
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        if (params != null&&params.length>0) {
+            for(PostParam param:params) {
+                map.add(param.getName(), param.getValue());
             }
-            request.setEntity(new UrlEncodedFormEntity(pairList, Charset.forName("UTF-8")));
         }
-        return execute(httpClient, request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+        return restTemplate.postForObject( url, request , String.class );
     }
 
     /**
@@ -139,39 +85,30 @@ public class HttpUtils {
      * @return  网络相应结果
      */
     public static String post(String url, String postParams) {
-        HttpEntity postEntity = null;
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
         if (StringUtils.isNotEmpty(postParams)) {
             String[] params = postParams.split("&");
-            List<NameValuePair> formParams = new ArrayList<NameValuePair>();
-            if (params != null && params.length > 0)
-                for (String param : params) {
-                    try {
-                        param = URLDecoder.decode(param, "utf-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    String[] nv = param.split("=");
-                    if (nv.length == 1) {
-                        formParams.add(new BasicNameValuePair(nv[0], ""));
-                    } else {
-                        formParams.add(new BasicNameValuePair(param.substring(
-                                0, param.indexOf("=")), param.substring(param
-                                .indexOf("=") + 1)));
-                    }
+            for (String param : params) {
+                try {
+                    param = URLDecoder.decode(param, "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-            try {
-                postEntity = new UrlEncodedFormEntity(formParams, "utf-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                String[] nv = param.split("=");
+                if (nv.length == 1) {
+                    map.add(nv[0], "");
+                } else {
+                    map.add(param.substring(
+                            0, param.indexOf("=")), param.substring(param
+                            .indexOf("=") + 1));
+                }
             }
         }
 
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpPost request = new HttpPost(url);
-        if (postEntity != null) {
-            request.setEntity(postEntity);
-        }
-        return execute(httpClient, request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+        return restTemplate.postForObject( url, request , String.class );
     }
 
     /**
@@ -183,18 +120,8 @@ public class HttpUtils {
      * @throws HttpException  StringEntity(str)转码异常
      */
     public static String postString(String url, String str) throws HttpException {
-        try {
-            HttpEntity postEntity = new StringEntity(str);
-            CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-            HttpPost request = new HttpPost(url);
-            if (postEntity != null) {
-                request.setEntity(postEntity);
-            }
-            return execute(httpClient, request);
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new HttpException(e);
-        }
+        HttpEntity<String> requestEntity = new HttpEntity<String>(str);
+        return restTemplate.postForObject(url,requestEntity,String.class);
     }
 
     /**
@@ -205,35 +132,16 @@ public class HttpUtils {
      * @return  result 相应结果
      */
     public static boolean download(String url, String path) {
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpGet request = new HttpGet(url);
-        CloseableHttpResponse response;
-        boolean res = false;
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Resource> httpEntity = new HttpEntity<Resource>(headers);
+        ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET,httpEntity,byte[].class);
         try {
-            response = httpClient.execute(request, CookieContext.createHttpClientContext());
-            if (HttpStatus.SC_OK == response.getStatusLine().getStatusCode()) {
-                HttpEntity httpEntity = response.getEntity();
-                InputStream is = httpEntity.getContent();
-                if (!new File(path).exists()) {
-                    new File(path).getParentFile().mkdirs();
-                    new File(path).createNewFile();
-                }
-                FileUtils.copyInputStreamToFile(is, new File(path));
-                if (httpEntity != null) {
-                    EntityUtils.consume(httpEntity);
-                }
-                res = true;
-            }
+            FileUtils.writeByteArrayToFile(new File(path),response.getBody());
+            return true;
         } catch (IOException e) {
-            logger.error(e.getMessage());
-        } finally {
-            try {
-                httpClient.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            logger.error(e.getLocalizedMessage(),e);
+            return false;
         }
-        return res;
     }
 
 
@@ -248,46 +156,20 @@ public class HttpUtils {
         if (fileParams == null) {
             return null;
         }
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.setCharset(Charset.forName("UTF-8"));
+        MultiValueMap<String, Object> param = new LinkedMultiValueMap<>();
         for (PostFileParam fileParam : fileParams) {
             if (fileParam.getValue() instanceof File) {
-                if (fileParam.getContentType() != null) {
-                    File file = (File) fileParam.getValue();
-                    FileBody fileBody = new FileBody(file, fileParam.getContentType());
-                    builder.addPart(fileParam.getName(), fileBody);
-                } else {
-                    File file = (File) fileParam.getValue();
-                    FileBody fileBody = new FileBody(file);
-                    builder.addPart(fileParam.getName(), fileBody);
-                }
+                File file = (File) fileParam.getValue();
+                FileSystemResource resource = new FileSystemResource(file);
+                param.add(fileParam.getName(),resource);
             } else if (fileParam.getValue() instanceof String) {
-                if (fileParam.getContentType() != null) {
-                    String str = (String) fileParam.getValue();
-                    StringBody stringBody = new StringBody(str, fileParam.getContentType());
-                    builder.addPart(fileParam.getName(), stringBody);
-                } else {
-                    String str = (String) fileParam.getValue();
-                    StringBody stringBody = new StringBody(str, ContentType.MULTIPART_FORM_DATA);
-                    builder.addPart(fileParam.getName(), stringBody);
-                }
-            } else if (fileParam.getValue() instanceof InputStream) {
-                if (fileParam.getContentType() != null) {
-                    InputStream inputStream = (InputStream) fileParam.getValue();
-                    InputStreamBody fileBody = new InputStreamBody(inputStream, fileParam.getContentType());
-                    builder.addPart(fileParam.getName(), fileBody);
-                } else {
-                    InputStream inputStream = (InputStream) fileParam.getValue();
-                    InputStreamBody fileBody = new InputStreamBody(inputStream, ContentType.APPLICATION_OCTET_STREAM);
-                    builder.addPart(fileParam.getName(), fileBody);
-                }
+                String value = (String) fileParam.getValue();
+                param.add(fileParam.getName(),value);
             }
         }
-        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpPost request = new HttpPost(url);
-        request.setEntity(builder.build());
-        return execute(httpClient, request);
+
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(param);
+        return restTemplate.patchForObject(url, httpEntity, String.class);
     }
 
 
@@ -311,13 +193,10 @@ public class HttpUtils {
      * @return  result 相应结果
      */
     public static String postString(String url, String data, String type) {
-        CloseableHttpClient httpClient = HttpClientFactory.createHttpClient();
-        HttpPost request = new HttpPost(url);
-        StringEntity stringEntity = new StringEntity(data, "UTF-8");
-        stringEntity.setContentEncoding("UTF-8");
-        stringEntity.setContentType(type);
-        request.setEntity(stringEntity);
-        return execute(httpClient, request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(type));
+        HttpEntity<String> requestEntity = new HttpEntity<String>(data,headers);
+        return restTemplate.postForObject(url,requestEntity,String.class);
     }
 
 

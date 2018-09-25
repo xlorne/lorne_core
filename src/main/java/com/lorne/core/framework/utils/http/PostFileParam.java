@@ -1,6 +1,5 @@
 package com.lorne.core.framework.utils.http;
 
-import org.apache.http.entity.ContentType;
 
 import java.io.File;
 import java.io.InputStream;
@@ -12,7 +11,6 @@ public class PostFileParam {
 
     private String name;
     private Object value;
-    private ContentType contentType;
 
     private String fileName;
 
@@ -21,10 +19,11 @@ public class PostFileParam {
     }
 
     public String getName() {
-        if (name == null)
+        if (name == null) {
             return "";
-        else
+        } else {
             return name;
+        }
     }
 
     public void setName(String name) {
@@ -39,50 +38,16 @@ public class PostFileParam {
         this.value = value;
     }
 
-
-    public ContentType getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(ContentType contentType) {
-        this.contentType = contentType;
-    }
-
-    public PostFileParam(String name, File value) {
+   public PostFileParam(String name, File value) {
         this.name = name;
         this.value = value;
-        this.contentType=contentType;
-    }
-    public PostFileParam(String name, File value, ContentType contentType) {
-        this.name = name;
-        this.value = value;
-        this.contentType=contentType;
     }
 
-    public PostFileParam(String name, String value) {
-        this.name = name;
-        this.value = value;
-        this.contentType=contentType;
-    }
-
-    public PostFileParam(String name, String value, ContentType contentType) {
-        this.name = name;
-        this.value = value;
-        this.contentType=contentType;
-    }
-
-    public PostFileParam(String name, String fileName, InputStream value, ContentType contentType) {
-        this.fileName = fileName;
-        this.name = name;
-        this.value = value;
-        this.contentType=contentType;
-    }
 
     public PostFileParam(String name, String fileName, InputStream value) {
         this.fileName = fileName;
         this.name = name;
         this.value = value;
-        this.contentType=contentType;
     }
 
 
