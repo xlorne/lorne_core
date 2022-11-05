@@ -1,7 +1,7 @@
 
 ### 框架介绍V1.0.0：
 
-  该框架属于工具类底层框架。
+  该框架属于工具类底层框架。停止维护，新框架见https://github.com/codingapi/springboot-framework
   
  
 ### 框架支持功能如下：
